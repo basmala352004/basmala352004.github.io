@@ -72,26 +72,44 @@ nav {
 .nav-logo {
   font-family: 'Fraunces', serif;
   font-size: 1rem; font-weight: 500;
-  color: var(--ink); text-decoration: none;
+  color: var(--ink); text-decoration: none; flex-shrink: 0;
 }
 .nav-logo span { color: var(--amber); }
+
+/* pill-style desktop nav */
 .nav-center {
   position: absolute; left: 50%; transform: translateX(-50%);
-  display: flex; gap: 0.25rem;
+  display: flex; gap: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px;
+  overflow: visible;
 }
 .nav-center a {
-  font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+  font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
   color: var(--ink-3); text-decoration: none;
-  padding: 0.35rem 0.9rem; border-radius: 20px;
-  transition: all 0.2s;
+  padding: 0.35rem 1.1rem; border-radius: 999px;
+  transition: color 0.2s; position: relative; z-index: 1; white-space: nowrap;
 }
-.nav-center a:hover, .nav-center a.active {
-  color: var(--ink); background: var(--surface);
+.nav-center a.active,
+.nav-center a:hover { color: var(--ink); }
+
+/* sliding background pill */
+.nav-pill {
+  position: absolute;
+  background: var(--bg-3);
+  border-radius: 999px;
+  transition: left 0.28s cubic-bezier(.4,0,.2,1), width 0.28s cubic-bezier(.4,0,.2,1), top 0.28s;
+  pointer-events: none; z-index: 0;
 }
+
+.nav-right { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+
 .toggle-btn {
   width: 44px; height: 24px; border-radius: 12px;
   background: var(--toggle); border: 1px solid var(--border-h);
-  cursor: pointer; position: relative; transition: background 0.3s; flex-shrink: 0;
+  cursor: pointer; position: relative; transition: background 0.3s;
 }
 .toggle-knob {
   position: absolute; top: 3px; left: 3px;
@@ -102,10 +120,52 @@ nav {
 }
 [data-theme="light"] .toggle-knob { transform: translateX(20px); }
 
+/* hamburger button (mobile only) */
+.hamburger {
+  display: none; flex-direction: column; justify-content: center; gap: 5px;
+  width: 34px; height: 34px; cursor: pointer;
+  background: none; border: none; padding: 4px;
+}
+.hamburger span {
+  display: block; height: 1.5px; background: var(--ink);
+  border-radius: 2px; transition: all 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* mobile dropdown menu */
+.mobile-menu {
+  display: none;
+  position: fixed; top: 60px; left: 0; right: 0; z-index: 199;
+  background: var(--nav-blur);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  flex-direction: column; padding: 0.75rem 1.5rem 1rem; gap: 2px;
+  opacity: 0; transform: translateY(-8px);
+  transition: opacity 0.22s, transform 0.22s;
+}
+.mobile-menu.open {
+  display: flex; opacity: 1; transform: translateY(0);
+}
+.mobile-menu a {
+  font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-2); text-decoration: none;
+  padding: 0.65rem 0.75rem; border-radius: 8px;
+  display: flex; align-items: center; gap: 8px; transition: all 0.2s;
+}
+.mobile-menu a::before {
+  content: ''; width: 4px; height: 4px; border-radius: 50%;
+  background: var(--amber); opacity: 0; transition: opacity 0.2s; flex-shrink: 0;
+}
+.mobile-menu a:hover, .mobile-menu a.active { color: var(--ink); background: var(--surface); }
+.mobile-menu a.active::before { opacity: 1; }
+
 /* ── HERO ── */
 .hero {
   min-height: 100vh; padding-top: 60px;
-  display: grid; grid-template-columns: 1fr 400px;
+  display: grid; grid-template-columns: 1fr 380px;
+  align-items: stretch;
   position: relative; overflow: hidden;
 }
 .hero::before {
@@ -117,7 +177,7 @@ nav {
 }
 .hero-main {
   display: flex; flex-direction: column; justify-content: center;
-  padding: 5rem 3rem;
+  padding: 5rem 4rem 5rem 3rem;
   border-right: 1px solid var(--border);
   position: relative; z-index: 1;
 }
@@ -175,15 +235,14 @@ h1 em { font-style: italic; color: var(--amber); font-weight: 300; }
 /* ── HERO SIDE ── */
 .hero-side {
   display: flex; flex-direction: column;
-  padding: 4rem 2rem;
+  padding: 3rem 2rem;
   gap: 1.25rem;
   position: relative; z-index: 1;
-  overflow-y: auto;
+  justify-content: center;
 }
 
 .avatar-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--surface); border: 1px solid var(--border);
   border-radius: 12px; padding: 1.8rem;
   display: flex; flex-direction: column; align-items: center; gap: 0.9rem;
   opacity: 0; animation: up 0.8s 0.4s ease both;
@@ -259,8 +318,7 @@ h2 {
 .tl-dot {
   width: 10px; height: 10px; border-radius: 50%;
   background: var(--surface); border: 2px solid var(--amber);
-  flex-shrink: 0; margin-top: 0.2rem; z-index: 1;
-  transition: background 0.2s;
+  flex-shrink: 0; margin-top: 0.2rem; z-index: 1; transition: background 0.2s;
 }
 .tl-item:hover .tl-dot { background: var(--amber); }
 .tl-line { flex: 1; width: 1px; background: linear-gradient(to bottom, var(--border-h), transparent); margin-top: 4px; }
@@ -397,9 +455,10 @@ footer {
 @media (max-width: 960px) {
   nav { padding: 0 1.5rem; }
   .nav-center { display: none; }
+  .hamburger { display: flex; }
   .hero { grid-template-columns: 1fr; }
   .hero-main { padding: 3.5rem 1.5rem 2rem; border-right: none; border-bottom: 1px solid var(--border); }
-  .hero-side { padding: 2rem 1.5rem; }
+  .hero-side { padding: 2rem 1.5rem; justify-content: flex-start; }
   section { padding: 4rem 1.5rem; }
   .tl-item { grid-template-columns: 90px 20px 1fr; gap: 0 1rem; }
   .contact-layout { grid-template-columns: 1fr; gap: 2.5rem; }
@@ -417,16 +476,30 @@ footer {
 
 <nav id="nav">
   <a class="nav-logo" href="#home">B.<span>E</span></a>
-  <div class="nav-center">
+  <div class="nav-center" id="navCenter">
+    <div class="nav-pill" id="navPill"></div>
     <a href="#experience">Experience</a>
     <a href="#projects">Projects</a>
     <a href="#skills">Skills</a>
     <a href="#contact">Contact</a>
   </div>
-  <button class="toggle-btn" id="themeToggle" aria-label="Toggle theme">
-    <div class="toggle-knob" id="toggleKnob">🌙</div>
-  </button>
+  <div class="nav-right">
+    <button class="toggle-btn" id="themeToggle" aria-label="Toggle theme">
+      <div class="toggle-knob" id="toggleKnob">🌙</div>
+    </button>
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
 </nav>
+
+<!-- Mobile drawer -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#experience">Experience</a>
+  <a href="#projects">Projects</a>
+  <a href="#skills">Skills</a>
+  <a href="#contact">Contact</a>
+</div>
 
 <!-- HERO -->
 <div class="hero" id="home">
@@ -454,7 +527,6 @@ footer {
   </div>
 
   <div class="hero-side">
-    <!-- Avatar -->
     <div class="avatar-card">
       <div class="avatar-graphic">
         <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -482,7 +554,6 @@ footer {
       </div>
     </div>
 
-    <!-- Stats -->
     <div class="bento-stats">
       <div class="bento-cell"><span class="bento-num" data-target="3.8" data-dec="1">0</span><span class="bento-label">GPA / 4.0</span></div>
       <div class="bento-cell"><span class="bento-num" data-target="240" data-suf="+">0</span><span class="bento-label">DevOps hrs</span></div>
@@ -490,7 +561,6 @@ footer {
       <div class="bento-cell"><span class="bento-num" data-target="5" data-suf="+">0</span><span class="bento-label">Projects</span></div>
     </div>
 
-    <!-- Certs -->
     <div class="cert-stack">
       <div class="cert-item"><div class="cert-pip"></div><div class="cert-name"><strong>ICPC — ECPC Qualifications</strong>National Competitive Programming · 2025</div></div>
       <div class="cert-item"><div class="cert-pip"></div><div class="cert-name"><strong>ISTQB CTFL v4</strong>Egyptian Software Testing Board</div></div>
@@ -546,7 +616,7 @@ footer {
       </div>
     </div>
     <div class="tl-item r">
-      <div class="tl-date">Jul – Sep 2023</div>
+      <div class="tl-date">Jul 2023 – Sep 2023</div>
       <div class="tl-spine"><div class="tl-dot"></div><div class="tl-line"></div></div>
       <div>
         <div class="tl-company">BETA</div>
@@ -706,6 +776,39 @@ document.getElementById('themeToggle').addEventListener('click', () => {
   const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
   html.dataset.theme = next;
   knob.textContent = next === 'dark' ? '🌙' : '☀️';
+  movePill();
+});
+
+// Hamburger menu
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+});
+mobileMenu.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+  });
+});
+
+// Sliding nav pill
+const navCenter = document.getElementById('navCenter');
+const pill = document.getElementById('navPill');
+function movePill(target) {
+  const active = target || navCenter.querySelector('a.active') || navCenter.querySelector('a');
+  if (!active) return;
+  const cr = navCenter.getBoundingClientRect();
+  const ar = active.getBoundingClientRect();
+  pill.style.top = (ar.top - cr.top) + 'px';
+  pill.style.left = (ar.left - cr.left) + 'px';
+  pill.style.width = ar.width + 'px';
+  pill.style.height = ar.height + 'px';
+}
+navCenter.querySelectorAll('a').forEach(a => {
+  a.addEventListener('mouseenter', () => movePill(a));
+  a.addEventListener('mouseleave', () => movePill());
 });
 
 // Scroll reveal
@@ -714,7 +817,7 @@ const obs = new IntersectionObserver(entries => {
 }, { threshold: 0.1 });
 document.querySelectorAll('.r').forEach(el => obs.observe(el));
 
-// Counter
+// Counter animation
 function counter(el) {
   const t = parseFloat(el.dataset.target);
   const dec = el.dataset.dec ? +el.dataset.dec : 0;
@@ -733,7 +836,7 @@ const cObs = new IntersectionObserver(entries => {
 }, { threshold: 0.5 });
 document.querySelectorAll('.bento-num[data-target]').forEach(el => cObs.observe(el));
 
-// Typed
+// Typed text
 const words = ['matters.','lasts.','scales.','ships.','inspires.'];
 let wi=0, ci=0, del=false;
 const tw = document.getElementById('tw');
@@ -745,17 +848,22 @@ function type() {
 }
 setTimeout(type, 1000);
 
-// Active nav
+// Active nav on scroll
+const sections = ['home','experience','projects','skills','contact'];
 window.addEventListener('scroll', () => {
   let cur = '';
-  ['home','experience','projects','skills','contact'].forEach(id => {
+  sections.forEach(id => {
     const el = document.getElementById(id);
     if (el && window.scrollY >= el.offsetTop - 100) cur = id;
   });
-  document.querySelectorAll('.nav-center a').forEach(a => {
-    a.classList.toggle('active', a.getAttribute('href') === '#'+cur);
-  });
+  navCenter.querySelectorAll('a').forEach(a =>
+    a.classList.toggle('active', a.getAttribute('href') === '#'+cur));
+  document.querySelectorAll('.mobile-menu a').forEach(a =>
+    a.classList.toggle('active', a.getAttribute('href') === '#'+cur));
+  movePill();
 });
+
+window.addEventListener('load', () => setTimeout(movePill, 100));
 </script>
 </body>
 </html>
